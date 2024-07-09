@@ -3,7 +3,7 @@
 ## Introduction
 This is cRegulon software: an optimization model an optimization model for modeling combinatorial regulation from single-cell multi-omics provides units underpinning cell type landscape.
 ## Requirements:
-1. Homer <br>
+1. Homer in your environment PATH <br>
 2. Python >=3.0 and packages below: <br>
 3. numpy-groupies==0.9.15 <br>
 4. numpy==1.26.3 <br>
