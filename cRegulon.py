@@ -399,7 +399,7 @@ def GRN(name, celltype, genome,num_processes):
 	TF_binding = mfbs_c(N,TFName, Element_name, motifName, motifWeight, Match2)
 
 	# gene expr
-	C = pd.read_csv("../../PseudoBulk/{}_{}_PS_RNA.txt".format(name,celltype), sep='\t', header=None)
+	C = pd.read_csv("../../PseudoBulk/{}_PS_RNA.txt".format(celltype), sep='\t', header=None)
 	Symbol = C.iloc[:, 0]
 	G = C.iloc[:, 1]
 
@@ -495,7 +495,7 @@ def GRN(name, celltype, genome,num_processes):
 	d = np.sort(np.asarray(c1).squeeze())[::-1]
 	f = np.argsort(np.asarray(c1).squeeze())[::-1]
 	Net = np.column_stack((Net[f], np.asarray(d).squeeze(), np.asarray(TFTG_RE)[f]))
-	filename = '{}_{}_network.txt'.format(name,celltype)
+	filename = '{}_network.txt'.format(celltype)
 	with open(filename, 'wt') as fid:
 		fid.write('\t'.join(['TF', 'TG', 'Score', 'FDR', 'REs']) + '\n')
 		for i in range(Net.shape[0]):
@@ -503,12 +503,12 @@ def GRN(name, celltype, genome,num_processes):
 
 def network(name,celltype,self_genome, num_processes=20, prior=0):
 	
-	folder_name = "./Networks/"+name+"_"+celltype
+	folder_name = "./Networks/"+celltype
 	os.makedirs(folder_name, exist_ok=True)
 	os.chdir('./{}'.format(folder_name))
 	
 	# openness, region 
-	df = pd.read_csv("../../PseudoBulk/{}_{}_PS_ATAC.txt".format(name,celltype), sep = '\t', header=None, names=['col1', 'col2', 'col3'])
+	df = pd.read_csv("../../PseudoBulk/{}_PS_ATAC.txt".format(celltype), sep = '\t', header=None, names=['col1', 'col2', 'col3'])
 	df[['chr', 'start', 'end']] = df['col1'].str.split('_', expand=True)
 	df = df[['chr', 'start', 'end', 'col2']]
 	df.to_csv('openness1.bed', sep='\t', header=False, index=False)
@@ -1010,7 +1010,7 @@ def main():
 	parser_prep.set_defaults(func=mode_prep)
 
 	# Mode grn
-	parser_grn = subparsers.add_parser('grn', help="GRN model")
+	parser_grn = subparsers.add_parser('grn', help="GRN mode")
 	parser_grn.add_argument('--name','-n',type=str, default = "Run",required=True,help="Task name")
 	parser_grn.add_argument('--celltype','-ct',type=str,default = "",required=True,help='Cell type name')
 	parser_grn.add_argument('--genome','-g',type=str, default = "",required=True,help='Genome build')
