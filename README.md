@@ -24,7 +24,7 @@ tar -xzvf cRegulonData.tar.gz
 ```
 ***We also provide an example for cRegulon analysis, which can be downloaded from the following command:***
 ```bash
-wget -O cRegulonExample.tar.gz https://figshare.com/ndownloader/files/47503904
+wget -O cRegulonExample.tar.gz https://figshare.com/ndownloader/files/49856427
 tar -xzvf cRegulonExample.tar.gz
 ```
 ***After downloading, there will be 5 folders that store raw data, intermediate results, and final results of example: <br>
