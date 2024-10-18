@@ -6,6 +6,7 @@ Created on Fri Jun  9 15:26:08 2023
 @author: Zaine
 """
 import numpy as np
+import seaborn as sns
 import matplotlib.pyplot as plt
 
 def combine_hex_values(d):
@@ -43,6 +44,14 @@ for i in range(len(L)):
 L = np.array(L).astype('float')
 Indel = [ct1.index(ct[i]) for i in range(len(ct))]
 L = L[Indel,]
+annot_kws={'fontstyle':'Arial'}
+hm = sns.heatmap(data = L,
+                yticklabels=ct, xticklabels=m,
+                cmap="coolwarm",
+                linewidths=0, linecolor="white", square=False,
+                annot_kws= annot_kws) 
+plt.show()
+
 LN = L.T.copy()
 for i in range(LN.shape[0]):
     LN[i] = LN[i]/np.sum(LN[i])
