@@ -11,3 +11,12 @@ Taking cell line experiment in our paper for example, we can run the following s
 ```bash
 python PlotTFMarker.py
 ```
+### Display important TFs in TF modules
+cRegulon will output the TF pairs of the TF modules, such as **CL_cRegulon1_TFModule.txt**. We can display the TF module in the form of network. <br>
+Taking cell line experiment in our paper for example, we can use **Cytoscape software (PlotTFModule.cys)** to construct such TF combinatorial network.
+### Display cell types and cRegulons associations
+Our software will output the associations between cell types and cRegulons. We can display these association by heatmap or the association plot defined in our manuscript. <br>
+Taking cell line experiment in our paper for example, we can run the following sceipt to display associations:
+```bash
+python PlotAssociation.py
+```
