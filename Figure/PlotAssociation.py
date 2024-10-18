@@ -44,6 +44,8 @@ for i in range(len(L)):
 L = np.array(L).astype('float')
 Indel = [ct1.index(ct[i]) for i in range(len(ct))]
 L = L[Indel,]
+
+### Plot cRegulon-Cell type association on heatmap
 annot_kws={'fontstyle':'Arial'}
 hm = sns.heatmap(data = L,
                 yticklabels=ct, xticklabels=m,
@@ -52,6 +54,7 @@ hm = sns.heatmap(data = L,
                 annot_kws= annot_kws) 
 plt.show()
 
+### Plot cRegulon-Cell type association on UMAP
 LN = L.T.copy()
 for i in range(LN.shape[0]):
     LN[i] = LN[i]/np.sum(LN[i])
