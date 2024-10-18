@@ -1,1 +1,1 @@
-# The codes to reproduce figures in cRegulon paper.
+## An instruction to display cRegulon in our paper
