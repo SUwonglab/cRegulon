@@ -775,7 +775,29 @@ def TFPairs(X, TF, Name):
 					g.write(TFT[j]+'\t'+TFT[k]+'\t'+str(XXT[j][k])+'\t'+str(pval)+'\n')
 					cTF[kk].append(TFT[j]);cTF[kk].append(TFT[k])
 		cTF[kk] = list(set(cTF[kk]))
-		g.close();
+		if len(cTF) == 0:
+			XK = X[kk]
+			XT = [];TFT = []
+			for i in range(80):
+				indel = np.argmax(XK)
+				XT.append(XK[indel]);TFT.append(TF[indel])
+				XK[indel] = -1000
+			XT = np.array(XT);XT = XT.reshape(XT.shape[0],1)
+			XXT = np.dot(XT,XT.T)
+			sample = []
+			for j in range(XXT.shape[0]):
+				for k in range(j+1,XXT.shape[0]):
+					if XXT[j][k] >= 0.05:
+						sample.append(XXT[j][k])
+			par = stats.gamma.fit(sample)
+			g = open("./Results/"+Name+'/cRegulon'+str(kk+1)+'_TFModule.txt','w')
+			for j in range(XXT.shape[0]):
+				for k in range(j+1,XXT.shape[0]):
+					pval = stats.gamma.sf(XXT[j][k],par[0],par[1],par[2])
+					if pval <= 0.05:
+						g.write(TFT[j]+'\t'+TFT[k]+'\t'+str(XXT[j][k])+'\t'+str(pval)+'\n')
+						cTF[kk].append(TFT[j]);cTF[kk].append(TFT[k])
+			g.close();
 	return cTF
         
 def WriteXL(X, L, TF, TG, Name, cutoff=0.1):
