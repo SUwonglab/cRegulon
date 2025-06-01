@@ -838,13 +838,18 @@ def WriteXL(X, L, TF, TG, Name, cutoff=0.1):
 		TGX = (TGX-np.min(TGX))/(np.max(TGX)-np.min(TGX))
 		for j in range(X.shape[1]):
 			if L[c][j] >= cutoff:
-				W = TGX[j];me = np.mean(W);sd = np.std(W)
+				W = TGX[j].copy();me = np.mean(W);sd = np.std(W)
 				cTG  = []
 				for k in range(len(TG)):
 					x = (W[k]-me)/sd
 					p = 1-stats.norm.cdf(x)
 					if p <= 0.05 or W[k]>=0.95:
-						cTG.append(TG[k])    
+						cTG.append(TG[k])
+				if len(cTG) = 0:
+					for k in range(500):
+						indel = np.argmax(W)
+						cTG.append(TG[indel])
+						W[indel] = -100000
 				g = open('./Results/'+Name+'/Annotation/'+ct[c]+'_M'+str(j+1)+"_subnetwork.txt",'w')
 				for k in range(len(net)):
 					if net[k][0] in cTFs[j] and net[k][1] in cTG:
