@@ -845,12 +845,7 @@ def WriteXL(X, L, TF, TG, Name, cutoff=0.1):
 					p = 1-stats.norm.cdf(x)
 					if p <= 0.05 or W[k]>=0.95:
 						cTG.append(TG[k])
-				if len(cTG) == 0:
-					for k in range(500):
-						indel = np.argmax(W)
-						cTG.append(TG[indel])
-						W[indel] = -100000
-				g = open('./Results/'+Name+'/Annotation/'+ct[c]+'_M'+str(j+1)+"_subnetwork.txt",'w')
+				subnet = []
 				for k in range(len(net)):
 					if net[k][0] in cTFs[j] and net[k][1] in cTG:
 						RE = []
@@ -859,8 +854,12 @@ def WriteXL(X, L, TF, TG, Name, cutoff=0.1):
 								RE.append(net[k][4][l])
 						if len(RE) > 0:
 							RE = ';'.join(RE)
-							g.write(net[k][0]+'\t'+net[k][1]+'\t'+net[k][2]+'\t'+RE+'\n')
-				g.close()
+							subnet.append(net[k][0]+'\t'+net[k][1]+'\t'+net[k][2]+'\t'+RE+'\n')
+				if len(subnet) > 0:
+					g = open('./Results/'+Name+'/Annotation/'+ct[c]+'_M'+str(j+1)+"_subnetwork.txt",'w')
+					for k in range(len(subnet)):
+						g.write(subnet[k])	
+					g.close()
 	for i in range(X.shape[1]):
 		D1 = []
 		for j in range(X.shape[0]):
