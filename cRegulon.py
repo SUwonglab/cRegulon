@@ -845,7 +845,7 @@ def WriteXL(X, L, TF, TG, Name, cutoff=0.1):
 					p = 1-stats.norm.cdf(x)
 					if p <= 0.05 or W[k]>=0.95:
 						cTG.append(TG[k])
-				if len(cTG) = 0:
+				if len(cTG) == 0:
 					for k in range(500):
 						indel = np.argmax(W)
 						cTG.append(TG[indel])
