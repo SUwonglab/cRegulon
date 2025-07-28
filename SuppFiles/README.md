@@ -1,1 +1,1 @@
-# This is the supplemenatry files of cRegulon paper published in *Genome Biology*.
+# These are the supplemenatry files of cRegulon paper published in *Genome Biology*.
