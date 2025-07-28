@@ -191,4 +191,4 @@ python3 cRegulon.py annot --name PBMC --path_rna ./example_data/PBMC/PBMC_scRNA.
 ## Citation:
 If you use cRegulon software or cRegulon associated concepts, please cite:
 
-[Zhanying Feng, et al. Modeling combinatorial regulation from single-cell multi-omics provides units underpinning cell type landscape. Genome Biology, 26 (220), 2025.](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-025-03680-w)
+[Zhanying Feng, et al. Modeling combinatorial regulation from single-cell multi-omics provides units underpinning cell type landscape. *Genome Biology*, 26 (220), 2025.](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-025-03680-w)
