@@ -749,55 +749,43 @@ def RunModuleK(C,K):
 		X = XNext.copy();L = LNext.copy()
 	return loss1, X, L
 
-def TFPairs(X, TF, Name):
+def TFPairs(X, TF, Name, pcut = 0.01):
 	X = X.T
-	cTF = []
+	cTFs = []
 	for kk in range(X.shape[0]):
 		XK = X[kk]
-		XT = [];TFT = []
-		for i in range(80):
-			indel = np.argmax(XK)
-			XT.append(XK[indel]);TFT.append(TF[indel])
-			XK[indel] = -1000
-		XT = np.array(XT);XT = XT.reshape(XT.shape[0],1)
-		XXT = np.dot(XT,XT.T)
-		sample = []
-		for j in range(XXT.shape[0]):
-			for k in range(j+1,XXT.shape[0]):
-				sample.append(XXT[j][k])
-		par = stats.gamma.fit(sample)
-		g = open("./Results/"+Name+'/cRegulon'+str(kk+1)+'_TFModule.txt','w')
-		cTF.append([])
-		for j in range(XXT.shape[0]):
-			for k in range(j+1,XXT.shape[0]):
-				pval = stats.gamma.sf(XXT[j][k],par[0],par[1],par[2])
-				if pval <= 0.05:
-					g.write(TFT[j]+'\t'+TFT[k]+'\t'+str(XXT[j][k])+'\t'+str(pval)+'\n')
-					cTF[kk].append(TFT[j]);cTF[kk].append(TFT[k])
-		cTF[kk] = list(set(cTF[kk]))
-		if len(cTF) == 0:
-			XK = X[kk]
-			XT = [];TFT = []
-			for i in range(80):
-				indel = np.argmax(XK)
-				XT.append(XK[indel]);TFT.append(TF[indel])
-				XK[indel] = -1000
-			XT = np.array(XT);XT = XT.reshape(XT.shape[0],1)
-			XXT = np.dot(XT,XT.T)
-			sample = []
-			for j in range(XXT.shape[0]):
-				for k in range(j+1,XXT.shape[0]):
-					if XXT[j][k] >= 0.05:
-						sample.append(XXT[j][k])
-			par = stats.gamma.fit(sample)
-			g = open("./Results/"+Name+'/cRegulon'+str(kk+1)+'_TFModule.txt','w')
-			for j in range(XXT.shape[0]):
-				for k in range(j+1,XXT.shape[0]):
-					pval = stats.gamma.sf(XXT[j][k],par[0],par[1],par[2])
-					if pval <= 0.05:
-						g.write(TFT[j]+'\t'+TFT[k]+'\t'+str(XXT[j][k])+'\t'+str(pval)+'\n')
-						cTF[kk].append(TFT[j]);cTF[kk].append(TFT[k])
-			g.close();
+		M = np.outer(XK, XK)
+	    vals = M[np.triu_indices_from(M, k=1)]
+	
+	    positive_vals = vals[vals > 0]
+	    
+	    shape, loc, scale = stats.gamma.fit(positive_vals, floc=0)
+	
+	    pvals = np.ones_like(vals, dtype=float)
+	    mask = vals > 0
+	    pvals[mask] = stats.gamma.sf(vals[mask], a=shape, loc=loc, scale=scale)
+	
+	    sig_mask = pvals < pcut
+	
+	    Pmat = np.full_like(M, np.nan, dtype=float)
+	    Sigmat = np.zeros_like(M, dtype=bool)
+	    tri_idx = np.triu_indices_from(M, k=1)
+	    Pmat[tri_idx] = pvals
+	    Sigmat[tri_idx] = sig_mask
+	
+	    results = []
+	    for i, j, v, p in zip(tri_idx[0][sig_mask], tri_idx[1][sig_mask], vals[sig_mask], pvals[sig_mask]):
+	        results.append((i, j, v, p))
+	    results_sorted = sorted(results, key=lambda x: x[3])
+	    cTF = []
+	    with open("./Results/"+Name+'/cRegulon'+str(kk+1)+'_TFModule.txt','w') as g:
+	        for i, j, v, p in results_sorted:
+	            g.write(TF[i]+'\t'+TF[j]+'\t'+str(v)+'\t'+str(p)+'\n')
+	            if TF[i] not in cTF:
+	                cTF.append(TF[i])
+	            if TF[j] not in cTF:
+	                cTF.append(TF[j])
+	    cTFs.append(cTF);print(len(cTF),sig_mask.sum())
 	return cTF
         
 def WriteXL(X, L, TF, TG, Name, cutoff=0.1):
