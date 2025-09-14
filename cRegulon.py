@@ -785,7 +785,7 @@ def TFPairs(X, TF, Name, pcut = 0.01):
 	                cTF.append(TF[i])
 	            if TF[j] not in cTF:
 	                cTF.append(TF[j])
-	    cTFs.append(cTF);print(len(cTF),sig_mask.sum())
+	    cTFs.append(cTF)
 	return cTF
         
 def WriteXL(X, L, TF, TG, Name, cutoff=0.1):
