@@ -338,8 +338,8 @@ def MotifFind(genome, num_processes, prior):
 	"""
 	Args:
 		genome (str): 
-		num_processes (int): 线程数
-		prior (int): 是否有已经扫好的homer motif文件
+		num_processes (int): çº¿ç¨‹æ•°
+		prior (int): æ˜¯å¦æœ‰å·²ç»æ‰«å¥½çš„homer motifæ–‡ä»¶
 	"""
 	processes = []
 	Split(num_processes)
@@ -366,7 +366,7 @@ def GRN(name, celltype, genome,num_processes):
 	Opn = C.iloc[:, 1]
 	Opn_median = C.iloc[:, 2]
 
-	# 读取mat文件
+	# è¯»å–matæ–‡ä»¶
 	# Match2, motifName, motifWeight
 	MotifMatch_mouse_rmdup = scio.loadmat('../../Data/MotifMatch_{}_rmdup.mat'.format(species))
 	# Exp_median, List, R2, TFExp_median, TFName
@@ -571,7 +571,7 @@ def network(name,celltype,self_genome, num_processes=20, prior=0):
 	print("step5: Network...")
 	GRN(name,celltype,self_genome,num_processes)
 	
-	# 清理中间文件
+	# æ¸…ç†ä¸­é—´æ–‡ä»¶
 	
 	for filename in os.listdir():
 	    if filename.startswith('.'):
@@ -749,43 +749,34 @@ def RunModuleK(C,K):
 		X = XNext.copy();L = LNext.copy()
 	return loss1, X, L
 
-def TFPairs(X, TF, Name, pcut = 0.01):
+def TFPairs(X, TF, Name):
 	X = X.T
 	cTFs = []
 	for kk in range(X.shape[0]):
 		XK = X[kk]
 		M = np.outer(XK, XK)
-	    vals = M[np.triu_indices_from(M, k=1)]
-	
-	    positive_vals = vals[vals > 0]
-	    
-	    shape, loc, scale = stats.gamma.fit(positive_vals, floc=0)
-	
-	    pvals = np.ones_like(vals, dtype=float)
-	    mask = vals > 0
-	    pvals[mask] = stats.gamma.sf(vals[mask], a=shape, loc=loc, scale=scale)
-	
-	    sig_mask = pvals < pcut
-	
-	    Pmat = np.full_like(M, np.nan, dtype=float)
-	    Sigmat = np.zeros_like(M, dtype=bool)
-	    tri_idx = np.triu_indices_from(M, k=1)
-	    Pmat[tri_idx] = pvals
-	    Sigmat[tri_idx] = sig_mask
-	
-	    results = []
-	    for i, j, v, p in zip(tri_idx[0][sig_mask], tri_idx[1][sig_mask], vals[sig_mask], pvals[sig_mask]):
-	        results.append((i, j, v, p))
-	    results_sorted = sorted(results, key=lambda x: x[3])
-	    cTF = []
-	    with open("./Results/"+Name+'/cRegulon'+str(kk+1)+'_TFModule.txt','w') as g:
-	        for i, j, v, p in results_sorted:
-	            g.write(TF[i]+'\t'+TF[j]+'\t'+str(v)+'\t'+str(p)+'\n')
-	            if TF[i] not in cTF:
-	                cTF.append(TF[i])
-	            if TF[j] not in cTF:
-	                cTF.append(TF[j])
-	    cTFs.append(cTF)
+		vals = M[np.triu_indices_from(M, k=1)]
+		vals = [[],[]]
+		for i in range(M.shape[0]):
+			for j in range(i+1,M.shape[0]):
+				if M[i][j] > 0:
+					vals[0].append([i,j])
+					vals[1].append(M[i][j])
+		pcut = np.percentile(vals[1],99);vals1 = vals[1].copy();cTF = []
+		with open("./Results/"+Name+'/cRegulon'+str(kk+1)+'_TFModule.txt','w') as g:
+			for i in range(len(vals1)):
+				indel = np.argmax(vals1)
+				if vals1[indel] > pcut:
+					pval = np.sum(np.array(vals[1])>=vals1[indel])/len(vals[1])
+					g.write(TF[vals[0][indel][0]]+"\t"+TF[vals[0][indel][1]]+"\t"+str(vals[1][indel])+"\t"+str(pval)+"\n")
+					if TF[vals[0][indel][0]] not in cTF:
+						cTF.append(TF[vals[0][indel][0]])
+					if TF[vals[0][indel][1]] not in cTF:
+						cTF.append(TF[vals[0][indel][1]])
+					vals1[indel] = -100
+				else:
+					break;
+		cTFs.append(cTF)
 	return cTF
         
 def WriteXL(X, L, TF, TG, Name, cutoff=0.1):
